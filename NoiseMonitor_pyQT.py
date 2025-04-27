@@ -61,6 +61,12 @@ class NoiseMonitorQt(QMainWindow):
         self.start_btn.clicked.connect(self.toggle_monitoring)
         control_layout.addWidget(self.start_btn)
         
+        # 添加重置按钮
+        self.reset_btn = QPushButton("重置")
+        self.reset_btn.setStyleSheet("font: 14pt 'Microsoft YaHei'")
+        self.reset_btn.clicked.connect(self.reset_monitoring)
+        control_layout.addWidget(self.reset_btn)
+
         self.result_label = QLabel("平均分贝: -- dB")
         self.result_label.setStyleSheet("font: 14pt 'Microsoft YaHei'")
         control_layout.addWidget(self.result_label)
@@ -69,7 +75,7 @@ class NoiseMonitorQt(QMainWindow):
         
         # 版权信息
         copyright_label = QLabel("@天津市南开区南开小学-7jul")
-        copyright_label.setStyleSheet("font: 12pt 'Microsoft YaHei'")
+        copyright_label.setStyleSheet("font: 12pt")
         layout.addWidget(copyright_label, alignment=Qt.AlignCenter)
         
         # 定时器
@@ -126,6 +132,25 @@ class NoiseMonitorQt(QMainWindow):
             )
             self.is_monitoring = False
             self.start_btn.setText("开始计时")
+    
+    def reset_monitoring(self):
+        """重置监测数据"""
+        if self.is_monitoring:
+            self.toggle_monitoring()  # 如果正在监测，先停止
+        
+        # 重置数据
+        self.db_values = []
+        self.start_time = None
+        
+        # 重置波形图
+        self.line.set_data([], [])
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.canvas.draw()
+        
+        # 重置显示
+        self.result_label.setText("平均分贝: -- dB")
+        self.start_btn.setText("开始计时")
     
     def closeEvent(self, event):
         if self.stream:
